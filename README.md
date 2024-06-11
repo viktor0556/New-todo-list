@@ -6,7 +6,7 @@
 - [React](https://react.dev/)
 - [Node](https://nodejs.org/en)
 
-- To get a local copy of the code, clone it using git:
+To get a local copy of the code, clone it using git:
 
 ```
 git clone https://github.com/viktor0556/New-todo-list.git
