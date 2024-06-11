@@ -14,9 +14,6 @@ function TodoInterface() {
   const fetchTodos = async () => {
     try {
       const response = await axios.get("http://localhost:2000/todos");
-      const formattedTodos = response.data.map(todo => {
-        return { ...todo, selectedTime: new Date(todo.selectedTime).toLocaleTimeString() };
-      });
       setTodos(response.data);
     } catch (err) {
       console.error(err.message);
@@ -30,12 +27,12 @@ function TodoInterface() {
   const addTodo = async () => {
     try {
       if (description.trim() !== "") {
+        const formattedTime = selectedTime + ':00'
         const response = await axios.post("http://localhost:2000/todos", {
           description,
-          selectedTime,
+          selectedTime: formattedTime
         });
-        const formattedTodo = { ...response.data, selectedTime: new Date(selectedTime).toLocaleTimeString() };
-        setTodos([...todos, { ...response.data, selectedTime }]);
+        setTodos([...todos, { ...response.data, selectedTime: formattedTime }]);
         setDescription("");
         setSelectedTime("");
       } else {

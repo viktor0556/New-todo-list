@@ -35,7 +35,7 @@ app.post('/todos', async (req, res) => {
     const { description, selectedTime } = req.body;
     const newTodo = await pool.query(
       'INSERT INTO todos (description, selectedTime) VALUES($1, $2) RETURNING *',
-      [description, selectedTime]
+      [description, selectedTime + ':00']
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
