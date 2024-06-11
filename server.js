@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 require('dotenv').config()
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 2000;
 
 app.use(cors());
 app.use(express.json());
@@ -32,14 +32,15 @@ app.get('/todos', async (req, res) => {
 
 app.post('/todos', async (req, res) => {
   try {
-    const { description } = req.body;
+    const { description, selectedTime } = req.body;
     const newTodo = await pool.query(
-      'INSERT INTO todos (description) VALUES($1) RETURNING *',
-      [description]
+      'INSERT INTO todos (description, selectedTime) VALUES($1, $2) RETURNING *',
+      [description, selectedTime]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
     console.error(err.message);
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 });
 
@@ -53,7 +54,7 @@ app.put('/todos/:id', async (req, res) => {
     );
     res.json('Todo was updated!');
   } catch (err) {
-    console.error(err.message)
+    console.error(err.message);
   }
 });
 
