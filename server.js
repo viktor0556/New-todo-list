@@ -32,10 +32,10 @@ app.get('/todos', async (req, res) => {
 
 app.post('/todos', async (req, res) => {
   try {
-    const { description, selectedTime } = req.body;
+    const { description, selectedtime } = req.body;
     const newTodo = await pool.query(
-      'INSERT INTO todos (description, selectedTime) VALUES($1, $2) RETURNING *',
-      [description, selectedTime]
+      'INSERT INTO todos (description, selectedtime) VALUES($1, $2) RETURNING *',
+      [description, selectedtime]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -47,10 +47,10 @@ app.post('/todos', async (req, res) => {
 app.put('/todos/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { description, completed, selectedTime } = req.body;
+    const { description, completed, selectedtime } = req.body;
     await pool.query(
-      'UPDATE todos SET description = $1, completed = $2, selectedTime = $3 WHERE id = $4',
-      [description, completed, selectedTime, id]
+      'UPDATE todos SET description = $1, completed = $2, selectedtime = $3 WHERE id = $4',
+      [description, completed, selectedtime, id]
     );
     res.json('Todo was updated!');
   } catch (err) {

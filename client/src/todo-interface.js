@@ -5,7 +5,7 @@ import "./App.css";
 function TodoInterface() {
   const [todos, setTodos] = useState([]);
   const [description, setDescription] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedtime, setSelectedtime] = useState("");
 
   useEffect(() => {
     fetchTodos();
@@ -22,7 +22,7 @@ function TodoInterface() {
   };
 
   const handleTimeChange = (event) => {
-    setSelectedTime(event.target.value);
+    setSelectedtime(event.target.value);
   };
 
   const addTodo = async () => {
@@ -30,11 +30,11 @@ function TodoInterface() {
       if (description.trim() !== "") {
         const response = await axios.post("http://localhost:2000/todos", {
           description,
-          selectedTime
+          selectedtime
         });
         setTodos([...todos, response.data]);
         setDescription("");
-        setSelectedTime("");
+        setSelectedtime("");
       } else {
         alert("Fill in the field")
       }
@@ -72,7 +72,7 @@ function TodoInterface() {
           <input 
           className="time-input"
           type="time" 
-          value={selectedTime} 
+          value={selectedtime} 
           onChange={handleTimeChange} 
           />
           </div>
@@ -88,13 +88,14 @@ function TodoInterface() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            <span>{todo.selectedtime}</span>
+            
             <span
               className={todo.completed ? 'completed' : ''}
             >
               {todo.description}
             </span>
-            <button onClick={() => updateTodo(todo.id, !todo.completed, todo.description, todo.selectedTime)}>
+            <span>{todo.selectedtime}</span>
+            <button onClick={() => updateTodo(todo.id, !todo.completed, todo.description, todo.selectedtime)}>
               {todo.completed ? "Undo" : "Complete"}
             </button>
             <button onClick={() => deleteTodo(todo.id)}>Delete</button>
