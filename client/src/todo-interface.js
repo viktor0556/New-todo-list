@@ -14,6 +14,7 @@ function TodoInterface() {
   const fetchTodos = async () => {
     try {
       const response = await axios.get("http://localhost:2000/todos");
+      console.log(response.data);
       setTodos(response.data);
     } catch (err) {
       console.error(err.message);
@@ -27,12 +28,11 @@ function TodoInterface() {
   const addTodo = async () => {
     try {
       if (description.trim() !== "") {
-        const formattedTime = selectedTime + ':00'
         const response = await axios.post("http://localhost:2000/todos", {
           description,
-          selectedTime: formattedTime
+          selectedTime
         });
-        setTodos([...todos, { ...response.data, selectedTime: formattedTime }]);
+        setTodos([...todos, response.data]);
         setDescription("");
         setSelectedTime("");
       } else {
@@ -43,11 +43,11 @@ function TodoInterface() {
     }
   };
 
-  const updateTodo = async (id, completed) => {
+  const updateTodo = async (id, completed, description, selectedtime) => {
     try {
-      await axios.put(`http://localhost:2000/todos/${id}`, { completed });
+      await axios.put(`http://localhost:2000/todos/${id}`, { completed, description, selectedtime });
       setTodos(
-        todos.map((todo) => (todo.id === id ? { ...todo, completed } : todo))
+        todos.map((todo) => (todo.id === id ? { ...todo, completed, selectedtime } : todo))
       );
     } catch (err) {
       console.error(err.message);
@@ -77,7 +77,6 @@ function TodoInterface() {
           />
           </div>
           <input
-            type="text"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
@@ -89,15 +88,13 @@ function TodoInterface() {
       <ul>
         {todos.map((todo) => (
           <li key={todo.id}>
-            <span>{todo.selectedTime}</span>
+            <span>{todo.selectedtime}</span>
             <span
-              style={{
-                textDecoration: todo.completed ? "line-through" : "none",
-              }}
+              className={todo.completed ? 'completed' : ''}
             >
               {todo.description}
             </span>
-            <button onClick={() => updateTodo(todo.id, !todo.completed)}>
+            <button onClick={() => updateTodo(todo.id, !todo.completed, todo.description, todo.selectedTime)}>
               {todo.completed ? "Undo" : "Complete"}
             </button>
             <button onClick={() => deleteTodo(todo.id)}>Delete</button>
