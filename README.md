@@ -38,6 +38,21 @@ CREATE TABLE todos (
 );
 
 ```
+
+## Create users table with id username and password
+```
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL
+);
+```
+# These permissions must be granted IF NECESSARY:
+```
+GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO your_pg_username;
+GRANT ALL PRIVILEGES ON TABLE users TO your_pg_username;
+```
+
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
 ```
 PG_USER=username
