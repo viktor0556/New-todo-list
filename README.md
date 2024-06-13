@@ -55,6 +55,7 @@ GRANT ALL PRIVILEGES ON TABLE users TO your_pg_username;
 
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
 ```
+# .env file
 PG_USER=username
 PG_HOST=hostname
 PG_DATABASE=database_name
@@ -65,11 +66,15 @@ These variables are usually stored in the .env file and must be set in the appro
 
 Now, you can start a local web server by running:
 
+# Start the client-side application
+
 ```
 cd client/ npm start dev
 ```
+
+# Start the server-side application
 ```
-nodemon server.js
+cd server/ nodemon server.js
 ```
 
 And then open http://localhost:3000/ to view it in the browser.
