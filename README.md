@@ -55,6 +55,7 @@ GRANT ALL PRIVILEGES ON TABLE users TO your_pg_username;
 
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
 ```
+# .env file
 PG_USER=username
 PG_HOST=hostname
 PG_DATABASE=database_name
