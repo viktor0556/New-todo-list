@@ -1,22 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import TodoInterface from './todo-interface';
-import Register from './Register';
-import Login from './Login';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>    
-    <Router>
-        <Routes>
-          <Route exact path="/todo" element={<TodoInterface />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />}/>
-        </Routes>
-      </Router>
+  <React.StrictMode>   
+    <App />
   </React.StrictMode>
 );
 

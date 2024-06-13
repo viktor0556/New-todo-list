@@ -44,6 +44,10 @@ const Register = () => {
         placeholder="Password"
       />
       <button onClick={handleRegister}>Register</button>
+      <br/>
+      <span>Already have an account?</span>
+      <br/>
+      <button onClick={() => navigate('/login')}>Login</button>
     </div>
   );
 }

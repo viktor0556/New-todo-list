@@ -40,6 +40,10 @@ const Login = () => {
       placeholder='Password'
       />
       <button onClick={handleLogin}>Login</button>
+        <br/>
+      <span>Dont have account?</span>
+      <br/>
+      <button onClick={() => navigate('/register')}>Create account</button>
     </div>
   )
 }
