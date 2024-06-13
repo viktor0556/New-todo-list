@@ -14,7 +14,7 @@ function TodoInterface() {
   const fetchTodos = async () => {
     try {
       const token = localStorage.getItem("token")
-      const response = await axios.get("http://localhost:2000/todos", {
+      const response = await axios.get("http://localhost:3000/todos", {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -32,7 +32,7 @@ function TodoInterface() {
   const addTodo = async () => {
     try {
       if (description.trim() !== "") {
-        const response = await axios.post("http://localhost:2000/todos", {
+        const response = await axios.post("http://localhost:3000/todos", {
           description,
           selectedtime
         });
@@ -49,7 +49,7 @@ function TodoInterface() {
 
   const updateTodo = async (id, completed, description, selectedtime) => {
     try {
-      await axios.put(`http://localhost:2000/todos/${id}`, { completed, description, selectedtime });
+      await axios.put(`http://localhost:3000/todos/${id}`, { completed, description, selectedtime });
       setTodos(
         todos.map((todo) => (todo.id === id ? { ...todo, completed, selectedtime } : todo))
       );
@@ -60,7 +60,7 @@ function TodoInterface() {
 
   const deleteTodo = async (id) => {
     try {
-      await axios.delete(`http://localhost:2000/todos/${id}`);
+      await axios.delete(`http://localhost:3000/todos/${id}`);
       setTodos(todos.filter((todo) => todo.id !== id));
     } catch (err) {
       console.error(err.message);
