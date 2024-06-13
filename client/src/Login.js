@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Login({ onLoginSucces }) {
+const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("")
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const response = await axios.post("http://localhost:2000/login", {
         username, 
-        password
+        password,
       });
       localStorage.setItem("token", response.data.token);
       console.log(response.data);
-      onLoginSucces();
+      navigate('/todo')
     } catch (err) {
+      setError("Login failed. Please try again.")
       console.error(err.message);
     }
   };
@@ -22,6 +26,7 @@ function Login({ onLoginSucces }) {
   return (
     <div>
       <h1>Login</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <input
       type='text'
       value={username}
