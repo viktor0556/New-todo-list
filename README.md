@@ -65,9 +65,13 @@ These variables are usually stored in the .env file and must be set in the appro
 
 Now, you can start a local web server by running:
 
+# Start the client-side application
+
 ```
 cd client/ npm start dev
 ```
+
+# Start the server-side application
 ```
 nodemon server.js
 ```
