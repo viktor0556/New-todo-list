@@ -19,7 +19,7 @@ const Login = () => {
       navigate('/todo')
     } catch (err) {
       setError("Login failed. Please try again.")
-      console.error(err.message);
+      console.error('Login Error:', err.message);
     }
   };
 

@@ -1,5 +1,6 @@
 const express = require("express");
 const { Pool } = require("pg");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 const pool = new Pool({
@@ -10,9 +11,32 @@ const pool = new Pool({
   port: process.env.PG_PORT,
 });
 
-router.get("/todos", async (req, res) => {
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+  if (token) {
+    return jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        console.error("Token Verification Error:", err.message);
+        return res.sendStatus(403);
+      }
+      req.user = user;
+      next();
+    });
+  }
+};
+
+router.get("/todos", authenticateToken, async (req, res) => {
   try {
-    const allTodos = await pool.query("SELECT * FROM todos");
+    const userId = req.user.id;
+    const allTodos = await pool.query(
+      "SELECT * FROM todos WHERE user_id = $1",
+      [userId]
+    );
     res.json(allTodos.rows);
   } catch (err) {
     console.error(err.message);
@@ -20,7 +44,34 @@ router.get("/todos", async (req, res) => {
   }
 });
 
-router.post("/todos", async (req, res) => {
+router.post("/todos", authenticateToken, async (req, res) => {
+  try {
+    const { description, selectedtime } = req.body;
+    const userId = req.user.id;
+    const newTodo = await pool.query(
+      "INSERT INTO todos (description, selectedtime, user_id) VALUES($1, $2, $3) RETURNING *",
+      [description, selectedtime, userId]
+    );
+    res.json(newTodo.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.get("/guest-todos", async (req, res) => {
+  try {
+    const allTodos = await pool.query(
+      "SELECT * FROM todos WHERE user_id IS NULL"
+    );
+    res.json(allTodos.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+router.post("/guest-todos", async (req, res) => {
   try {
     const { description, selectedtime } = req.body;
     const newTodo = await pool.query(

@@ -33,7 +33,6 @@ router.post("/register", async (req, res) => {
 
     res.json(newUser.rows[0]);
     console.log("Successful registration");
-    console.log(`username: ${username}, password: ${password}`);
   } catch (err) {
     console.error("Register Error:", err.message);
     res.status(500).json({ error: "Initial Server Error" });
