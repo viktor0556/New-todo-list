@@ -82,7 +82,7 @@ cd client/ npm start dev
 
 # Start the server-side application
 ```
-cd server/ nodemon server.js
+nodemon server.js
 ```
 
 And then open http://localhost:3000/ to view it in the browser.
