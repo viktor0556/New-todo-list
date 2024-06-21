@@ -77,12 +77,12 @@ Now, you can start a local web server by running:
 # Start the client-side application
 
 ```
-cd client/ npm start dev
+cd client/ npm start
 ```
 
 # Start the server-side application
 ```
-nodemon server.js
+nodemon src/server.ts
 ```
 
 And then open http://localhost:3000/ to view it in the browser.
