@@ -4,7 +4,7 @@
 ## Built with
 
 - [React](https://react.dev/)
-- [Node](https://nodejs.org/en)
+- [Node](https://nodejs.org/en) (v22.3.0)
 
 To get a local copy of the code, clone it using git:
 
