@@ -4,7 +4,7 @@
 ## Built with
 
 - [React](https://react.dev/)
-- [Node](https://nodejs.org/en)
+- [Node](https://nodejs.org/en) (v22.3.0)
 
 To get a local copy of the code, clone it using git:
 
@@ -77,12 +77,12 @@ Now, you can start a local web server by running:
 # Start the client-side application
 
 ```
-cd client/ npm start dev
+cd client/ npm start
 ```
 
 # Start the server-side application
 ```
-nodemon server.js
+nodemon src/server.ts
 ```
 
 And then open http://localhost:3000/ to view it in the browser.
