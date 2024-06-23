@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import axios from "axios";
+import { fetchTodos, addTodo, updateTodo, deleteTodo } from "./api";
 import "./styles/App.css";
+import { useNavigate } from 'react-router-dom';
 
 interface Todo {
   id: number;
@@ -9,33 +10,34 @@ interface Todo {
   selectedtime: string;
 }
 
-function TodoInterface() {
+const TodoInterface: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [description, setDescription] = useState<string>("");
   const [selectedtime, setSelectedtime] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    } else {
+      fetchTodosFromAPI();
+    }
+  }, [navigate]);
 
-  const fetchTodos = async () => {
+  const fetchTodosFromAPI = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:4000/todos", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("API Response:", response.data);
-      if (Array.isArray(response.data)) {
-        setTodos(response.data);
+      const todos = await fetchTodos();
+      setTodos(todos);
+    } catch (err) {
+      if ((err as Error).message === 'Token expired') {
+        setError('Session expired. Please log in again.');
+        navigate('/login');
       } else {
-        console.error("Unexpected response data:", response.data);
+        console.error("Fetch Todos Error:", (err as Error).message);
         setTodos([]);
       }
-    } catch (err: any) {
-      console.error("Fetch Todos Error:", err.message);
-      setTodos([]);
     }
   };
 
@@ -43,72 +45,63 @@ function TodoInterface() {
     setSelectedtime(event.target.value);
   };
 
-  const addTodo = async () => {
+  const handleAddTodo = async () => {
     try {
       if (description.trim() !== "") {
-        const token = localStorage.getItem("token");
-        const response = await axios.post(
-          "http://localhost:4000/todos",
-          {
-            description,
-            selectedtime,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setTodos([...todos, response.data]);
+        const newTodo = await addTodo(description, selectedtime);
+        setTodos([...todos, newTodo]);
         setDescription("");
         setSelectedtime("");
       } else {
         alert("Fill in the field");
       }
-    } catch (err: any) {
-      console.error("Add Todo Error:", err.message);
+    } catch (err) {
+      if ((err as Error).message === 'Token expired') {
+        setError('Session expired. Please log in again')
+      } else {
+        console.error("Add Todo Error:", (err as Error).message);
+      }
     }
   };
 
-  const updateTodo = async (id: number, completed: boolean, description: string, selectedtime: string) => {
+  const handleUpdateTodo = async (id: number, completed: boolean, description: string, selectedtime: string) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:4000/todos/${id}`,
-        {
-          completed,
-          description,
-          selectedtime,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await updateTodo(id, completed, description, selectedtime);
       setTodos(
         todos.map((todo) =>
           todo.id === id ? { ...todo, completed, selectedtime } : todo
         )
       );
-    } catch (err: any) {
-      console.error("Update Todo Error:", err.message);
+    } catch (err) {
+      if ((err as Error).message === 'Token expired') {
+        setError('Session expired. Please log in again.');
+      } else {
+        console.error("Update Todo Error:", (err as Error).message);
+      }
     }
   };
 
-  const deleteTodo = async (id: number) => {
+  const handleDeleteTodo = async (id: number) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:4000/todos/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await deleteTodo(id);
       setTodos(todos.filter((todo) => todo.id !== id));
-    } catch (err: any) {
-      console.error("Delete Todo Error:", err.message);
+    } catch (err) {
+      if ((err as Error).message === 'Token expired') {
+        setError('Session expired. Please log in again.');
+      } else {
+        console.error("Delete Todo Error:", (err as Error).message);
+      }
     }
   };
+
+  if (error) {
+    return (
+    <div>
+      {error}
+      <button onClick={() => navigate('/login')}>Go to login</button>
+      </div>
+      )
+  }
 
   return (
     <div>
@@ -127,7 +120,7 @@ function TodoInterface() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <button className="add-button" onClick={addTodo}>
+          <button className="add-button" onClick={handleAddTodo}>
             Add
           </button>
         </div>
@@ -141,7 +134,7 @@ function TodoInterface() {
             <span>{todo.selectedtime}</span>
             <button
               onClick={() =>
-                updateTodo(
+                handleUpdateTodo(
                   todo.id,
                   !todo.completed,
                   todo.description,
@@ -151,7 +144,7 @@ function TodoInterface() {
             >
               {todo.completed ? "Undo" : "Complete"}
             </button>
-            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+            <button onClick={() => handleDeleteTodo(todo.id)}>Delete</button>
           </li>
         ))}
       </ul>

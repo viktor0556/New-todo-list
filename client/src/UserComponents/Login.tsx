@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from './api';
 
-const Login = () => {
+const Login: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("")
@@ -10,16 +10,16 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/login", {
+      const response = await api.post('/login', {
         username, 
         password,
       });
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem('token', response.data.token);
       console.log(response.data);
       navigate('/todo')
-    } catch (err: any) {
+    } catch (err) {
       setError("Login failed. Please try again.")
-      console.error('Login Error:', err.message);
+      console.error('Login Error:', (err as Error).message);
     }
   };
 

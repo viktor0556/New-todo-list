@@ -1,11 +1,13 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Register from "./UserComponents/Register";
 import Login from "./UserComponents/Login";
 import TodoInterface from "./UserComponents/TodoInterface";
 import Guest from "./UserComponents/guest/Guest";
+import Home from "./Home";
+import ProtectedRoute from "./ProtectedRoute";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Router>
       <Routes>
@@ -19,30 +21,6 @@ function App() {
   );
 }
 
-function Home() {
-  return (
-    <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/login" style={{ textDecoration: "none" }}>
-              Login
-            </Link>
-          </li>
-          <li>
-            <Link to="/register" style={{ textDecoration: "none" }}>
-              Registration
-            </Link>
-          </li>
-          <li>
-            <Link to="/guest-todos" style={{ textDecoration: "none" }}>
-              Join as guest
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  );
-}
+<Home />
 
 export default App;

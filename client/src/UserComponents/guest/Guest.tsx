@@ -1,86 +1,42 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import axios from "axios";
+import { fetchGuestTodos, addGuestTodo, Todo } from "./guest-api";
 import "../styles/App.css";
 
-interface Todo {
-  id: number;
-  description: string;
-  selectedtime: string;
-  completed: boolean;
-}
-
-const Guest = () => {
+const Guest: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [description, setDescription] = useState<string>("");
   const [selectedtime, setSelectedtime] = useState<string>("");
 
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    const getTodos = async () => {
+      try {
+        const todos = await fetchGuestTodos();
+        setTodos(todos);
+      } catch (err) {
+        console.error("Fetch Todos Error:", (err as Error).message);
+        setTodos([]);
+      }
+    };
 
-  const fetchTodos = async () => {
-    try {
-      const response = await axios.get("http://localhost:4000/guest-todos", {
-      });
-      console.log("API Response:", response.data);
-    } catch (err: any) {
-      console.error("Fetch Todos Error:", err.message);
-      setTodos([]);
-    }
-  };
+    getTodos();
+  }, []);
 
   const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSelectedtime(event.target.value);
   };
 
-  const addTodo = async () => {
+  const handleAddTodo = async () => {
     try {
       if (description.trim() !== "") {
-        const response = await axios.post(
-          "http://localhost:4000/guest-todos",
-          {
-            description,
-            selectedtime,
-          },
-        );
-        setTodos([...todos, response.data]);
+        const newTodo = await addGuestTodo(description, selectedtime);
+        setTodos([...todos, newTodo]);
         setDescription("");
         setSelectedtime("");
       } else {
         alert("Fill in the field");
       }
-    } catch (err: any) {
-      console.error("Add Todo Error:", err.message);
-    }
-  };
-
-  const updateTodo = async (id: number, completed: boolean, description: string, selectedtime: string) => {
-    try {
-      await axios.put(
-        `http://localhost:4000/guest-todos/${id}`,
-        {
-          id,
-          completed,
-          description,
-          selectedtime,
-        }
-      );
-      setTodos(
-        todos.map((todo) =>
-          todo.id === id ? { ...todo, completed, selectedtime } : todo
-        )
-      );
-    } catch (err: any) {
-      console.error("Update Todo Error:", err.message);
-    }
-  };
-
-  const deleteTodo = async (id: number) => {
-    try {
-      await axios.delete(`http://localhost:4000/guest-todos/${id}`);
-      setTodos(todos.filter((todo) => todo.id !== id));
-    } catch (err: any) {
-      console.error("Delete Todo Error:", err.message);
+    } catch (err) {
+      console.error("Add Todo Error:", (err as Error).message);
     }
   };
 
@@ -101,7 +57,7 @@ const Guest = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <button className="add-button" onClick={addTodo}>
+          <button className="add-button" onClick={handleAddTodo}>
             Add
           </button>
         </div>
@@ -113,19 +69,6 @@ const Guest = () => {
               {todo.description}
             </span>
             <span>{todo.selectedtime}</span>
-            <button
-              onClick={() =>
-                updateTodo(
-                  todo.id,
-                  !todo.completed,
-                  todo.description,
-                  todo.selectedtime
-                )
-              }
-            >
-              {todo.completed ? "Undo" : "Complete"}
-            </button>
-            <button onClick={() => deleteTodo(todo.id)}>Delete</button>
           </li>
         ))}
       </ul>
