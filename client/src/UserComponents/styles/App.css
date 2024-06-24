@@ -9,7 +9,7 @@
 }
 
 .logout-button {
-  background-color: #d9534f;
+  background-color: #c02924;
   color: #fff;
   border: none;
   padding: 10px 20px;
@@ -96,11 +96,11 @@
 
 .description,
 .selectedtime {
-  color: #666; /* Szöveg színe */
+  color: #666; 
 }
 
 .add-button {
-  background-color: #5cb85c;
+  background-color: #212c21;
   color: #fff;
   border: none;
   padding: 12px 24px;

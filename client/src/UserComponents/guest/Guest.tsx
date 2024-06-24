@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { fetchGuestTodos, addGuestTodo, Todo } from "./guest-api";
-import "./styles/Guest.css";
+import "./style/Guest.css";
 
 const Guest: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -47,28 +47,27 @@ const Guest: React.FC = () => {
         <div className="input-add-container">
           <div className="time-input-container">
             <input
-              className="time-input"
+              className="time-input custom-input"
               type="time"
               value={selectedtime}
               onChange={handleTimeChange}
             />
           </div>
           <input
+            className="todo-description custom-input"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
-          <button className="add-button" onClick={handleAddTodo}>
+          <button className="add-button custom-button" onClick={handleAddTodo}>
             Add
           </button>
         </div>
       </div>
-      <ul>
+      <ul className="todo-list">
         {todos.map((todo) => (
-          <li key={todo.id}>
-            <span className={todo.completed ? "completed" : ""}>
+          <li key={todo.id} className="todo-item">
               {todo.description}
-            </span>
-            <span>{todo.selectedtime}</span>
+            <span className="selectedtime">{todo.selectedtime}</span>
           </li>
         ))}
       </ul>

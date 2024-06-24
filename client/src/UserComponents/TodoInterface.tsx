@@ -127,88 +127,86 @@ const TodoInterface: React.FC = () => {
 
   return (
     <div className="todo-app">
-  <button className="logout-button" onClick={handleLogout}>
-    Logout
-  </button>
-  <div className="add-todo-container">
-    <h1 className="title">To-Do List</h1>
-    <div className="input-add-container">
-      <div className="time-input-container">
-        <input
-          className="time-input"
-          type="time"
-          value={selectedtime}
-          onChange={handleTimeChange}
-        />
-        <select
-          className="priority-select"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
-        >
-          <option value="easy" className="priority-option">
-            Easy
-          </option>
-          <option value="medium" className="priority-option">
-            Medium
-          </option>
-          <option value="hard" className="priority-option">
-            Hard
-          </option>
-        </select>
-      </div>
-      <input
-        className="todo-description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button className="add-button" onClick={handleAddTodo}>
-        Add
+      <button className="logout-button" onClick={handleLogout}>
+        Logout
       </button>
+      <div className="add-todo-container">
+        <h1 className="title">To-Do List</h1>
+        <div className="input-add-container">
+          <div className="time-input-container">
+            <input
+              className="time-input"
+              type="time"
+              value={selectedtime}
+              onChange={handleTimeChange}
+            />
+            <select
+              className="priority-select"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value)}
+            >
+              <option value="easy" className="priority-option">
+                Easy
+              </option>
+              <option value="medium" className="priority-option">
+                Medium
+              </option>
+              <option value="hard" className="priority-option">
+                Hard
+              </option>
+            </select>
+          </div>
+          <input
+            className="todo-description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <button className="add-button" onClick={handleAddTodo}>
+            Add
+          </button>
+        </div>
+      </div>
+      <ul className="todo-list">
+        {todos.map((todo) => (
+          <li
+            key={todo.id}
+            className={`todo-item ${todo.completed ? "completed" : ""}`}
+          >
+            <div className="todo-info">
+              <span className="priority">
+                {capitalizeFirstLetter(todo.priority)} Task
+              </span>
+              <span className="description">{todo.description}</span>
+              <span className="selectedtime">
+                {cleanedTime(todo.selectedtime)}
+              </span>
+            </div>
+            <div className="complete-delete-container">
+              <button
+                className="update-button"
+                onClick={() =>
+                  handleUpdateTodo(
+                    todo.id,
+                    !todo.completed,
+                    todo.description,
+                    todo.selectedtime,
+                    todo.priority
+                  )
+                }
+              >
+                {todo.completed ? "Undo" : "Complete"}
+              </button>
+              <button
+                className="delete-button"
+                onClick={() => handleDeleteTodo(todo.id)}
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
-  </div>
-  <ul className="todo-list">
-    {todos.map((todo) => (
-      <li
-        key={todo.id}
-        className={`todo-item ${todo.completed ? "completed" : ""}`}
-      >
-        <div className="todo-info">
-          <span className="priority">
-            {capitalizeFirstLetter(todo.priority)} Task
-          </span>
-          <span className="description">
-            {todo.description}
-          </span>
-          <span className="selectedtime">
-            {cleanedTime(todo.selectedtime)}
-          </span>
-        </div>
-        <div className="complete-delete-container">
-          <button
-            className="update-button"
-            onClick={() =>
-              handleUpdateTodo(
-                todo.id,
-                !todo.completed,
-                todo.description,
-                todo.selectedtime,
-                todo.priority
-              )
-            }
-          >
-            {todo.completed ? "Undo" : "Complete"}
-          </button>
-          <button
-            className="delete-button"
-            onClick={() => handleDeleteTodo(todo.id)}
-          >
-            Delete
-          </button>
-        </div>
-      </li>
-    ))}
-  </ul>
-</div>
   );
 };
 
