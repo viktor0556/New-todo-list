@@ -26,6 +26,8 @@ npm install
 2. Create a database: Open a PostgreSQL service such as pgAdmin or psql. Log in with the appropriate user and then create a new database for the project.
 3. Create tables: After you have created the database, create tables to store the necessary data. The following example shows how to create a simple question table:
 ```
+psql -U postgres
+
 CREATE DATABASE todoapp;
 
 \c todoapp
@@ -59,6 +61,12 @@ ALTER TABLE todos ADD COLUMN user_id INTEGER;
 ALTER TABLE todos ADD CONSTRAINT fk_user
   FOREIGN KEY (user_id)
   REFERENCES users (id);
+```
+
+## Creating difficulty for tasks:
+
+```
+ALTER TABLE todos ADD COLUMN priority VARCHAR(10) DEFAULT 'medium';
 ```
 
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
