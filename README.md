@@ -1,11 +1,8 @@
 ![image](https://github.com/viktor0556/New-todo-list/assets/134110891/45dccc2e-c8dd-419f-ace2-e5d1ab57ab1a)
 ![image](https://github.com/viktor0556/New-todo-list/assets/134110891/f8dc0573-2010-41b2-bd69-253c6151de43)
 ![image](https://github.com/viktor0556/New-todo-list/assets/134110891/0950b8c6-abd9-4edc-824c-f4c6a9eb7404)
-
-
-
-
-
+![image](https://github.com/viktor0556/New-todo-list/assets/134110891/60a41240-c5b2-4d59-ab05-7016444d46ae)
+![image](https://github.com/viktor0556/New-todo-list/assets/134110891/24ce42ac-6c54-41c8-a957-c441cf1a0dd9)
 
 ## Built with
 
