@@ -1,4 +1,10 @@
-![Képernyőkép ekkor: 2024-06-12 00-01-32](https://github.com/viktor0556/New-todo-list/assets/134110891/0aeb77d6-8a2e-4022-ab47-4b55b368db6d)
+![image](https://github.com/viktor0556/New-todo-list/assets/134110891/45dccc2e-c8dd-419f-ace2-e5d1ab57ab1a)
+![image](https://github.com/viktor0556/New-todo-list/assets/134110891/f8dc0573-2010-41b2-bd69-253c6151de43)
+![image](https://github.com/viktor0556/New-todo-list/assets/134110891/0950b8c6-abd9-4edc-824c-f4c6a9eb7404)
+
+
+
+
 
 
 ## Built with
