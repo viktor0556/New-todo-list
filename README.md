@@ -72,6 +72,33 @@ ALTER TABLE todos ADD CONSTRAINT fk_user
 ALTER TABLE todos ADD COLUMN priority VARCHAR(10) DEFAULT 'medium';
 ```
 
+## Creating Tags and Categories:
+```
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+```
+
+## Todo table modification:
+```
+ALTER TABLE todos ADD COLUMN category_id INTEGER REFERENCES categories(id);
+```
+
+## Intermediate table to implement the connection between tasks and labels:
+```
+CREATE TABLE todo_tags (
+    todo_id INTEGER REFERENCES todos(id),
+    tag_id INTEGER REFERENCES tags(id),
+    PRIMARY KEY (todo_id, tag_id)
+);
+```
+
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
 ```
 # .env file
