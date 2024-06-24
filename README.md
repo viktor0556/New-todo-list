@@ -91,6 +91,7 @@ cd client/ npm start
 # Start the server-side application
 ```
 nodemon src/server.ts
+If you want to restart the server but do not want to exit the server, write "rs" in the nodemon terminal
 ```
 
 And then open http://localhost:3000/ to view it in the browser.
