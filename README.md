@@ -46,6 +46,7 @@ CREATE TABLE todos (
 
 ## Create users table with id username and password
 ```
+postgres=# \c yourdatabase
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(255) UNIQUE NOT NULL,
@@ -54,12 +55,14 @@ CREATE TABLE users (
 ```
 # These permissions must be granted IF NECESSARY:
 ```
+postgres=# \c yourdatabase
 GRANT USAGE, SELECT ON SEQUENCE users_id_seq TO your_pg_username;
 GRANT ALL PRIVILEGES ON TABLE users TO your_pg_username;
 ```
 
 ## Creating a connection between tasks and users:
 ```
+postgres=# \c yourdatabase
 ALTER TABLE todos ADD COLUMN user_id INTEGER;
 ALTER TABLE todos ADD CONSTRAINT fk_user
   FOREIGN KEY (user_id)
@@ -69,7 +72,43 @@ ALTER TABLE todos ADD CONSTRAINT fk_user
 ## Creating difficulty for tasks:
 
 ```
+postgres=# \c yourdatabase
 ALTER TABLE todos ADD COLUMN priority VARCHAR(10) DEFAULT 'medium';
+```
+
+## Creating Tags and Categories:
+```
+postgres=# \c yourdatabase
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+```
+
+## Todo table modification:
+```
+postgres=# \c yourdatabase
+ALTER TABLE todos ADD COLUMN category_id INTEGER REFERENCES categories(id);
+```
+
+## Intermediate table to implement the connection between tasks and labels:
+```
+postgres=# \c yourdatabase
+CREATE TABLE todo_tags (
+    todo_id INTEGER REFERENCES todos(id),
+    tag_id INTEGER REFERENCES tags(id),
+    PRIMARY KEY (todo_id, tag_id)
+);
+```
+# If permission denied for table tags or categories ({"error":"Internal Server Error"}):
+```
+postgres=# \c yourdatabase
+todoapp=# GRANT SELECT, INSERT, UPDATE, DELETE ON tags, categories TO youruser;
 ```
 
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
