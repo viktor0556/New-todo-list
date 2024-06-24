@@ -1,5 +1,15 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
-import { fetchTodos, addTodo, updateTodo, deleteTodo } from "./api";
+import {
+  fetchTodos,
+  addTodo,
+  updateTodo,
+  deleteTodo,
+  fetchCategories,
+  fetchTags,
+  Category,
+  Tag,
+  addTag
+} from "./api";
 import "./styles/App.css";
 import { useNavigate } from "react-router-dom";
 
@@ -9,14 +19,22 @@ interface Todo {
   completed: boolean;
   selectedtime: string;
   priority: string;
+  categoryId: number | null;
+  tags: number[];
 }
 
 const TodoInterface: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [description, setDescription] = useState<string>("");
   const [selectedtime, setSelectedtime] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
   const [priority, setPriority] = useState<string>("medium"); // default medium
+  const [categoryId, setCategoryId] = useState<number | null>(null);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // Loading state
+  const [newCategory, setNewCategory] = useState('');
+  const [newTag, setNewTag] = useState('');
   const navigate = useNavigate();
 
   const capitalizeFirstLetter = (str: string) => {
@@ -32,23 +50,38 @@ const TodoInterface: React.FC = () => {
     if (!token) {
       navigate("/login");
     } else {
-      fetchTodosFromAPI();
+      fetchInitialData();
     }
   }, [navigate]);
 
-  const fetchTodosFromAPI = async () => {
+  const fetchInitialData = async () => {
     try {
-      const todos = await fetchTodos();
-      setTodos(todos);
+      setLoading(true);
+      await Promise.all([
+        fetchTodosFromAPI(),
+        fetchCategoriesFromAPI(),
+        fetchTagsFromApi(),
+      ]);
     } catch (err) {
-      if ((err as Error).message === "Token expired") {
-        setError("Session expired. Please log in again.");
-        navigate("/login");
-      } else {
-        console.error("Fetch Todos Error:", (err as Error).message);
-        setTodos([]);
-      }
+      handleFetchError(err as Error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const fetchTodosFromAPI = async () => {
+    const todos = await fetchTodos();
+    setTodos(todos);
+  };
+
+  const fetchCategoriesFromAPI = async () => {
+    const categories = await fetchCategories();
+    setCategories(categories);
+  };
+
+  const fetchTagsFromApi = async () => {
+    const tags = await fetchTags();
+    setTags(tags);
   };
 
   const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -58,20 +91,20 @@ const TodoInterface: React.FC = () => {
   const handleAddTodo = async () => {
     try {
       if (description.trim() !== "") {
-        const newTodo = await addTodo(description, selectedtime, priority);
+        const newTodo = await addTodo(
+          description,
+          selectedtime,
+          priority,
+          categoryId,
+          selectedTags
+        );
         setTodos([...todos, newTodo]);
-        setDescription("");
-        setSelectedtime("");
-        setPriority("medium");
+        resetForm();
       } else {
         alert("Fill in the field");
       }
     } catch (err) {
-      if ((err as Error).message === "Token expired") {
-        setError("Session expired. Please log in again");
-      } else {
-        console.error("Add Todo Error:", (err as Error).message);
-      }
+      handleRequestError(err as Error);
     }
   };
 
@@ -83,18 +116,22 @@ const TodoInterface: React.FC = () => {
     priority: string
   ) => {
     try {
-      await updateTodo(id, completed, description, selectedtime, priority);
+      await updateTodo(
+        id,
+        completed,
+        description,
+        selectedtime,
+        priority,
+        categoryId,
+        selectedTags
+      );
       setTodos(
         todos.map((todo) =>
           todo.id === id ? { ...todo, completed, selectedtime } : todo
         )
       );
     } catch (err) {
-      if ((err as Error).message === "Token expired") {
-        setError("Session expired. Please log in again.");
-      } else {
-        console.error("Update Todo Error:", (err as Error).message);
-      }
+      handleRequestError(err as Error);
     }
   };
 
@@ -103,11 +140,7 @@ const TodoInterface: React.FC = () => {
       await deleteTodo(id);
       setTodos(todos.filter((todo) => todo.id !== id));
     } catch (err) {
-      if ((err as Error).message === "Token expired") {
-        setError("Session expired. Please log in again.");
-      } else {
-        console.error("Delete Todo Error:", (err as Error).message);
-      }
+      handleRequestError(err as Error);
     }
   };
 
@@ -116,14 +149,55 @@ const TodoInterface: React.FC = () => {
     navigate("/login");
   };
 
-  if (error) {
-    return (
-      <div>
-        {error}
-        <button onClick={() => navigate("/login")}>Go to login</button>
-      </div>
-    );
+  const resetForm = () => {
+    setDescription("");
+    setSelectedtime("");
+    setPriority("medium");
+    setCategoryId(null);
+    setSelectedTags([]);
+  };
+
+  const handleFetchError = (err: Error) => {
+    if (err.message === "Token expired") {
+      navigate("/login");
+    } else {
+      console.error("Fetch Todos Error:", err.message);
+      setTodos([]);
+    }
+  };
+
+  const handleRequestError = (err: Error) => {
+    if (err.message === "Token expired") {
+      navigate("/login");
+    } else {
+      console.error("Request Error:", err.message);
+    }
+  };
+
+  const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const categoryId = parseInt(event.target.value, 10);
+    setCategoryId(categoryId);
+  };
+
+  const handleTagChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const tagId = parseInt(event.target.value, 10);
+    if (!selectedTags.includes(tagId)) {
+      setSelectedTags([...selectedTags, tagId]);
+    }
+  };
+
+  const removeTag = (tagId: number) => {
+    setSelectedTags(selectedTags.filter((tag) => tag !== tagId));
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
+
+  console.log("Todos:", todos);
+  console.log("Categories:", categories);
+  console.log("Tags:", tags);
+  console.log("SelectedTags:", selectedTags);
 
   return (
     <div className="todo-app">
@@ -155,6 +229,43 @@ const TodoInterface: React.FC = () => {
                 Hard
               </option>
             </select>
+            {categories.length > 0 && (
+              <select 
+                className="category-select"
+                value={categoryId ?? ""}
+                onChange={handleCategoryChange}
+              >
+                <option value="">Select category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            {tags.length > 0 && (
+              <select
+                className="tag-select"
+                onChange={handleTagChange}
+              >
+                <option value="">Select Tags</option>
+                {tags.map((tag) => (
+                  <option key={tag.id} value={tag.id}>
+                    {tag.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            <div className="selected-tags">
+              {selectedTags.length > 0 && selectedTags.map((tagId) => (
+                <div key={tagId} className="tag-item">
+                  {tags.find((tag) => tag.id === tagId)?.name}
+                  <button className="remove-tag-button" onClick={() => removeTag(tagId)}>
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
           <input
             className="todo-description"
@@ -167,7 +278,7 @@ const TodoInterface: React.FC = () => {
         </div>
       </div>
       <ul className="todo-list">
-        {todos.map((todo) => (
+        {todos.length > 0 && todos.map((todo) => (
           <li
             key={todo.id}
             className={`todo-item ${todo.completed ? "completed" : ""}`}
@@ -180,6 +291,23 @@ const TodoInterface: React.FC = () => {
               <span className="selectedtime">
                 {cleanedTime(todo.selectedtime)}
               </span>
+              {categories.length > 0 && todo.categoryId && (
+                <span className="category">
+                  Category: {categories.find((cat) => cat.id === todo.categoryId)?.name}
+                </span>
+              )}
+              <div className="tags">
+                {todo.tags.length > 0 && (
+                  <>
+                    Tags:
+                    {todo.tags.map((tagId) => (
+                      <span key={tagId} className="tag">
+                        {tags.find((tag) => tag.id === tagId)?.name}
+                      </span>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
             <div className="complete-delete-container">
               <button
