@@ -27,6 +27,7 @@ export interface Todo {
   description: string;
   selectedtime: string;
   completed: boolean;
+  priority: string;
 }
 
 export const fetchTodos = async (): Promise<Todo[]> => {
@@ -34,20 +35,22 @@ export const fetchTodos = async (): Promise<Todo[]> => {
   return response.data;
 };
 
-export const addTodo = async (description: string, selectedtime: string): Promise<Todo> => {
+export const addTodo = async (description: string, selectedtime: string, priority: string): Promise<Todo> => {
   const response = await api.post('/todos', {
     description,
     selectedtime,
+    priority
   });
   return response.data;
 };
 
-export const updateTodo = async (id: number, completed: boolean, description: string, selectedtime: string): Promise<void> => {
+export const updateTodo = async (id: number, completed: boolean, description: string, selectedtime: string, priority: string): Promise<void> => {
   await api.put(`/todos/${id}`, {
     id,
     completed,
     description,
     selectedtime,
+    priority,
   });
 };
 

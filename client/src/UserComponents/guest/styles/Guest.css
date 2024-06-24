@@ -5,31 +5,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
-.logout-button {
-  background-color: #d9534f;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 10px;
-}
-
-.title {
+.title{
   display: flex;
-  justify-content: center;
 }
 
 .add-todo-container {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 600px; 
+  max-width: 600px;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -37,8 +26,6 @@
 .input-add-container {
   display: flex;
   align-items: center;
-  justify-content: center; 
-  flex-direction: column; 
 }
 
 .time-input-container {
@@ -48,7 +35,6 @@
 }
 
 .time-input,
-.priority-select,
 .todo-description {
   padding: 10px;
   border: 1px solid #ccc;
@@ -62,41 +48,8 @@
   margin-right: 10px;
 }
 
-.priority-select {
-  width: 120px;
-}
-
 .todo-description {
   flex: 1;
-}
-
-.priority,
-.description,
-.selectedtime {
-  background-color: #f5f5f5; 
-  padding: 8px;
-  margin-bottom: 8px;
-  border-radius: 3px;
-  text-align: center;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.priority {
-  font-weight: bold;
-  color: #333;
-}
-
-.description,
-.selectedtime {
-  color: #666; /* Szöveg színe */
 }
 
 .add-button {
@@ -110,12 +63,13 @@
   margin-bottom: 10px;
 }
 
-.todo-list {
+ul {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
-.todo-item {
+li {
   background-color: #fff;
   margin-bottom: 15px;
   padding: 15px;
@@ -126,36 +80,28 @@
   align-items: center;
 }
 
-.complete-delete-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
 .completed {
   text-decoration: line-through;
   color: #aaa;
 }
 
-.todo-info {
-  font-size: 16px;
-  margin-bottom: 10px; 
-  display: flex;
-  flex-direction: column;
+.todo-app input[type="time"],
+.todo-app input[type="text"],
+.todo-app button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
-.update-button,
-.delete-button {
-  background-color: #f0ad4e;
+.todo-app button {
+  background-color: #5cb85c;
   color: #fff;
   border: none;
-  padding: 8px 16px;
+  padding: 12px 24px;
   border-radius: 5px;
   cursor: pointer;
-  margin-left: 10px;
-}
-
-.update-button:hover,
-.delete-button:hover {
-  background-color: #ec971f;
+  margin-left: 15px;
+  margin-bottom: 10px;
 }

@@ -1,0 +1,58 @@
+.login-container {
+  font-family: Arial, sans-serif;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-container p {
+  color: red;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"],
+.login-container button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box; 
+}
+
+.login-container button {
+  background-color: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #4cae4c;
+}
+
+.login-container span {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.login-container button.create-account-button {
+  background-color: #337ab7;
+}
+
+.login-container button.create-account-button:hover {
+  background-color: #286090;
+}

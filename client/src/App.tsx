@@ -12,7 +12,11 @@ const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/todo" element={<TodoInterface />} />
+        <Route path="/todo" element={
+        <ProtectedRoute>
+        <TodoInterface />
+        </ProtectedRoute>
+        } />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/guest-todos" element={<Guest />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from "react";
 import { fetchGuestTodos, addGuestTodo, Todo } from "./guest-api";
-import "../styles/App.css";
+import "./styles/Guest.css";
 
 const Guest: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -41,9 +41,9 @@ const Guest: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="todo-app">
       <div className="add-todo-container">
-        <h1>To-Do List</h1>
+        <h1 className="title">To-Do List</h1>
         <div className="input-add-container">
           <div className="time-input-container">
             <input
@@ -74,6 +74,6 @@ const Guest: React.FC = () => {
       </ul>
     </div>
   );
-}
+};
 
 export default Guest;

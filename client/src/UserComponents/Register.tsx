@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import api from "./api";
+import { useNavigate } from "react-router-dom";
+import './styles/Register.css'
 
-const Register = () => {
+const Register: React.FC = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -10,27 +11,26 @@ const Register = () => {
 
   const handleRegister = async () => {
     try {
-      const response = await axios.post("http://localhost:4000/register", {
+      const response = await api.post("/register", {
         username,
         password,
       });
       console.log(response.data);
-      navigate('/login');
-      console.log('Successful login!')
-    } catch (err: any) {
-      if (err.response && err.response.data) {
-        setError(err.response.data.error);
+      navigate("/login");
+      console.log("Successful login!");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError((err).message);
       } else {
-        console.error(err.message);
+        console.error("An unknow error occured.");
       }
-      
     }
   };
 
   return (
-    <div>
+    <div className="register-container">
       <h1>Register</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <input
         type="text"
         value={username}
@@ -44,12 +44,14 @@ const Register = () => {
         placeholder="Password"
       />
       <button onClick={handleRegister}>Register</button>
-      <br/>
+      <br />
       <span>Already have an account?</span>
-      <br/>
-      <button onClick={() => navigate('/login')}>Login</button>
+      <br />
+      <button className="login-button" onClick={() => navigate("/login")}>
+        Login
+      </button>
     </div>
   );
-}
+};
 
 export default Register;

@@ -1,9 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import './UserComponents/styles/Home.css'
 
-function Home() {
+const Home: React.FC = () => {
   return (
-    <div>
+    <div className="navbar">
       <nav>
         <ul>
           <li>

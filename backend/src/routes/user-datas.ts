@@ -60,14 +60,14 @@ router.get("/todos", authenticateToken, async (req: Request, res: Response) => {
 
 router.post("/todos", authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { description, selectedtime } = req.body;
+    const { description, selectedtime, priority } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const newTodo = await pool.query(
-      "INSERT INTO todos (description, selectedtime, user_id) VALUES($1, $2, $3) RETURNING *",
-      [description, selectedtime, userId]
+      "INSERT INTO todos (description, selectedtime, priority, user_id) VALUES($1, $2, $3, $4) RETURNING *",
+      [description, selectedtime, priority, userId]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -79,14 +79,14 @@ router.post("/todos", authenticateToken, async (req: Request, res: Response) => 
 router.put("/todos/:id", authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { description, completed, selectedtime } = req.body;
+    const { description, completed, selectedtime, priority } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     await pool.query(
-      "UPDATE todos SET description = $1, completed = $2, selectedtime = $3 WHERE id = $4",
-      [description, completed, selectedtime, id]
+      "UPDATE todos SET description = $1, completed = $2, selectedtime = $3, priority = $4 WHERE id = $5",
+      [description, completed, selectedtime, priority, id]
     );
     res.json("Todo was updated!");
   } catch (err) {
