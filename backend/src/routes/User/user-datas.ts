@@ -1,15 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
-import { Pool } from 'pg';
+import pool from "../../db/pool";
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-const pool = new Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: Number(process.env.PG_PORT),
-});
 
 interface User {
   id: Number,
@@ -53,21 +46,21 @@ router.get("/todos", authenticateToken, async (req: Request, res: Response) => {
     );
     res.json(allTodos.rows);
   } catch (err) {
-    console.error((err as Error).message);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Database query error: ", (err as Error).message);
+    res.status(500).json({ error: "Internal Server Error", details: (err as Error) });
   }
 });
 
 router.post("/todos", authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { description, selectedtime, priority } = req.body;
+    const { description, selectedtime, priority, categoryId } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const newTodo = await pool.query(
-      "INSERT INTO todos (description, selectedtime, priority, user_id) VALUES($1, $2, $3, $4) RETURNING *",
-      [description, selectedtime, priority, userId]
+      "INSERT INTO todos (description, selectedtime, priority, category_id, user_id) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [description, selectedtime, priority, categoryId, userId]
     );
     res.json(newTodo.rows[0]);
   } catch (err) {
@@ -79,13 +72,13 @@ router.post("/todos", authenticateToken, async (req: Request, res: Response) => 
 router.put("/todos/:id", authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { description, completed, selectedtime, priority } = req.body;
+    const { description, completed, selectedtime, priority, categoryId } = req.body;
     const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     await pool.query(
-      "UPDATE todos SET description = $1, completed = $2, selectedtime = $3, priority = $4 WHERE id = $5",
+      "UPDATE todos SET description = $1, completed = $2, selectedtime = $3, priority = $4, category_id = $5 WHERE id = $6",
       [description, completed, selectedtime, priority, id]
     );
     res.json("Todo was updated!");

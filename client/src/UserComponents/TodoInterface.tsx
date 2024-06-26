@@ -1,49 +1,23 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import {
   fetchTodos,
   addTodo,
   updateTodo,
   deleteTodo,
   fetchCategories,
-  fetchTags,
   Category,
-  Tag,
-  addTag
+  Todo
 } from "./api";
 import "./styles/App.css";
 import { useNavigate } from "react-router-dom";
-
-interface Todo {
-  id: number;
-  description: string;
-  completed: boolean;
-  selectedtime: string;
-  priority: string;
-  categoryId: number | null;
-  tags: number[];
-}
+import TodoForm from "./TodoInterfaceComponents/TodoForm";
+import TodoList from "./TodoInterfaceComponents/TodoList";
 
 const TodoInterface: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [description, setDescription] = useState<string>("");
-  const [selectedtime, setSelectedtime] = useState<string>("");
-  const [priority, setPriority] = useState<string>("medium"); // default medium
-  const [categoryId, setCategoryId] = useState<number | null>(null);
-  const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [newCategory, setNewCategory] = useState('');
-  const [newTag, setNewTag] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-
-  const capitalizeFirstLetter = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  };
-
-  const cleanedTime = (selectedtime: string) => {
-    return selectedtime.replace(/:00$/, "");
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -57,11 +31,15 @@ const TodoInterface: React.FC = () => {
   const fetchInitialData = async () => {
     try {
       setLoading(true);
-      await Promise.all([
-        fetchTodosFromAPI(),
-        fetchCategoriesFromAPI(),
-        fetchTagsFromApi(),
+      const [todosData, categoriesData] = await Promise.all([
+      fetchTodos(),
+      fetchCategories(),
       ]);
+      setTodos(todosData.map(todo => ({
+        ...todo,
+        categoryName: categoriesData.find(cat => cat.id === todo.categoryId)?.name || 'Uncategorized'
+      })));
+      setCategories(categoriesData);
     } catch (err) {
       handleFetchError(err as Error);
     } finally {
@@ -69,40 +47,18 @@ const TodoInterface: React.FC = () => {
     }
   };
 
-  const fetchTodosFromAPI = async () => {
-    const todos = await fetchTodos();
-    setTodos(todos);
-  };
-
-  const fetchCategoriesFromAPI = async () => {
-    const categories = await fetchCategories();
-    setCategories(categories);
-  };
-
-  const fetchTagsFromApi = async () => {
-    const tags = await fetchTags();
-    setTags(tags);
-  };
-
-  const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setSelectedtime(event.target.value);
-  };
-
-  const handleAddTodo = async () => {
+  const handleAddTodo = async (
+    description: string,
+    selectedtime: string,
+    priority: string,
+    categoryId: number | null,
+  ) => {
     try {
-      if (description.trim() !== "") {
-        const newTodo = await addTodo(
-          description,
-          selectedtime,
-          priority,
-          categoryId,
-          selectedTags
-        );
-        setTodos([...todos, newTodo]);
-        resetForm();
-      } else {
-        alert("Fill in the field");
-      }
+      const newTodo = await addTodo(description, selectedtime, priority, categoryId);
+      const category = categories.find(cat => cat.id === categoryId);
+      const categoryName = category ? category.name : 'Uncategorized';
+
+      setTodos([...todos, { ...newTodo, categoryName }]);
     } catch (err) {
       handleRequestError(err as Error);
     }
@@ -122,8 +78,7 @@ const TodoInterface: React.FC = () => {
         description,
         selectedtime,
         priority,
-        categoryId,
-        selectedTags
+        null,
       );
       setTodos(
         todos.map((todo) =>
@@ -149,19 +104,11 @@ const TodoInterface: React.FC = () => {
     navigate("/login");
   };
 
-  const resetForm = () => {
-    setDescription("");
-    setSelectedtime("");
-    setPriority("medium");
-    setCategoryId(null);
-    setSelectedTags([]);
-  };
-
   const handleFetchError = (err: Error) => {
     if (err.message === "Token expired") {
       navigate("/login");
     } else {
-      console.error("Fetch Todos Error:", err.message);
+      console.error("Fetch Todos Error:", (err as Error).message);
       setTodos([]);
     }
   };
@@ -170,34 +117,13 @@ const TodoInterface: React.FC = () => {
     if (err.message === "Token expired") {
       navigate("/login");
     } else {
-      console.error("Request Error:", err.message);
+      console.error("Request Error:", (err as Error).message);
     }
-  };
-
-  const handleCategoryChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const categoryId = parseInt(event.target.value, 10);
-    setCategoryId(categoryId);
-  };
-
-  const handleTagChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    const tagId = parseInt(event.target.value, 10);
-    if (!selectedTags.includes(tagId)) {
-      setSelectedTags([...selectedTags, tagId]);
-    }
-  };
-
-  const removeTag = (tagId: number) => {
-    setSelectedTags(selectedTags.filter((tag) => tag !== tagId));
   };
 
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  console.log("Todos:", todos);
-  console.log("Categories:", categories);
-  console.log("Tags:", tags);
-  console.log("SelectedTags:", selectedTags);
 
   return (
     <div className="todo-app">
@@ -206,134 +132,17 @@ const TodoInterface: React.FC = () => {
       </button>
       <div className="add-todo-container">
         <h1 className="title">To-Do List</h1>
-        <div className="input-add-container">
-          <div className="time-input-container">
-            <input
-              className="time-input"
-              type="time"
-              value={selectedtime}
-              onChange={handleTimeChange}
-            />
-            <select
-              className="priority-select"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-            >
-              <option value="easy" className="priority-option">
-                Easy
-              </option>
-              <option value="medium" className="priority-option">
-                Medium
-              </option>
-              <option value="hard" className="priority-option">
-                Hard
-              </option>
-            </select>
-            {categories.length > 0 && (
-              <select 
-                className="category-select"
-                value={categoryId ?? ""}
-                onChange={handleCategoryChange}
-              >
-                <option value="">Select category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            {tags.length > 0 && (
-              <select
-                className="tag-select"
-                onChange={handleTagChange}
-              >
-                <option value="">Select Tags</option>
-                {tags.map((tag) => (
-                  <option key={tag.id} value={tag.id}>
-                    {tag.name}
-                  </option>
-                ))}
-              </select>
-            )}
-            <div className="selected-tags">
-              {selectedTags.length > 0 && selectedTags.map((tagId) => (
-                <div key={tagId} className="tag-item">
-                  {tags.find((tag) => tag.id === tagId)?.name}
-                  <button className="remove-tag-button" onClick={() => removeTag(tagId)}>
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-          <input
-            className="todo-description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-          <button className="add-button" onClick={handleAddTodo}>
-            Add
-          </button>
-        </div>
+        <TodoForm
+          onAddTodo={handleAddTodo}
+          categories={categories}
+        />
       </div>
-      <ul className="todo-list">
-        {todos.length > 0 && todos.map((todo) => (
-          <li
-            key={todo.id}
-            className={`todo-item ${todo.completed ? "completed" : ""}`}
-          >
-            <div className="todo-info">
-              <span className="priority">
-                {capitalizeFirstLetter(todo.priority)} Task
-              </span>
-              <span className="description">{todo.description}</span>
-              <span className="selectedtime">
-                {cleanedTime(todo.selectedtime)}
-              </span>
-              {categories.length > 0 && todo.categoryId && (
-                <span className="category">
-                  Category: {categories.find((cat) => cat.id === todo.categoryId)?.name}
-                </span>
-              )}
-              <div className="tags">
-                {todo.tags.length > 0 && (
-                  <>
-                    Tags:
-                    {todo.tags.map((tagId) => (
-                      <span key={tagId} className="tag">
-                        {tags.find((tag) => tag.id === tagId)?.name}
-                      </span>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
-            <div className="complete-delete-container">
-              <button
-                className="update-button"
-                onClick={() =>
-                  handleUpdateTodo(
-                    todo.id,
-                    !todo.completed,
-                    todo.description,
-                    todo.selectedtime,
-                    todo.priority
-                  )
-                }
-              >
-                {todo.completed ? "Undo" : "Complete"}
-              </button>
-              <button
-                className="delete-button"
-                onClick={() => handleDeleteTodo(todo.id)}
-              >
-                Delete
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <TodoList
+        todos={todos}
+        onUpdateTodo={handleUpdateTodo}
+        onDeleteTodo={handleDeleteTodo}
+        categories={categories}
+      />
     </div>
   );
 };

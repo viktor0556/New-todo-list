@@ -1,16 +1,9 @@
 import express, { Request, Response } from 'express';
-import { Pool } from 'pg';
+import pool from "../../db/pool";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
-const pool = new Pool ({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: Number(process.env.PG_PORT),
-});
 
 interface User {
   id: number;

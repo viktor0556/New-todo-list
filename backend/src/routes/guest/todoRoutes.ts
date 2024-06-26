@@ -1,24 +1,14 @@
-import { Pool } from "pg";
 import express, { Request, Response } from "express";
+import pool from "../../db/pool";
 
 const router = express.Router();
-const pool = new Pool({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: Number(process.env.PG_PORT),
-});
+
 
 router.get("/guest-todos", async (req: Request, res: Response) => {
   try {
     const allTodos = await pool.query(`
       SELECT todos.*, categories.name as category_name, 
-      json_agg(json_build_object('id', tags.id, 'name', tags.name)) as tags
-      FROM todos
       LEFT JOIN categories ON todos.category_id = categories.id
-      LEFT JOIN todo_tags ON todos.id = todo_tags.todo_id
-      LEFT JOIN tags ON todo_tags.tag_id = tags.id
       WHERE todos.user_id IS NULL
       GROUP BY todos.id, categories.name
     `);
@@ -41,7 +31,7 @@ router.post("/guest-todos", async (req: Request, res: Response) => {
 
     if (tags && tags.length > 0) {
       const insertTagsQuery = `
-        INSERT INTO todo_tags (todo_id, tag_id) VALUES 
+        INSERT INTO todo_tags (todo_id) VALUES 
         ${tags.map((tagId: number) => `(${todoId}, ${tagId})`).join(", ")}
       `;
       await pool.query(insertTagsQuery);
