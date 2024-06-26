@@ -76,7 +76,7 @@ postgres=# \c yourdatabase
 ALTER TABLE todos ADD COLUMN priority VARCHAR(10) DEFAULT 'medium';
 ```
 
-## Creating Tags and Categories:
+## Creating Categories:
 ```
 postgres=# \c yourdatabase
 CREATE TABLE categories (
@@ -84,31 +84,18 @@ CREATE TABLE categories (
     name VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE tags (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
-);
 ```
-
 ## Todo table modification:
 ```
 postgres=# \c yourdatabase
 ALTER TABLE todos ADD COLUMN category_id INTEGER REFERENCES categories(id);
 ```
 
-## Intermediate table to implement the connection between tasks and labels:
+```
+# If permission denied for table categories ({"error":"Internal Server Error"}):
 ```
 postgres=# \c yourdatabase
-CREATE TABLE todo_tags (
-    todo_id INTEGER REFERENCES todos(id),
-    tag_id INTEGER REFERENCES tags(id),
-    PRIMARY KEY (todo_id, tag_id)
-);
-```
-# If permission denied for table tags or categories ({"error":"Internal Server Error"}):
-```
-postgres=# \c yourdatabase
-todoapp=# GRANT SELECT, INSERT, UPDATE, DELETE ON tags, categories TO youruser;
+todoapp=# GRANT SELECT, INSERT, UPDATE, DELETE ON categories TO youruser;
 ```
 
 4. Setting environment variables: After you have created the database and tables, don't forget to set the project environment variables so that the application can connect to the database. For example:
