@@ -14,7 +14,7 @@ interface TodoFormProps {
 const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo, categories }) => {
   const [description, setDescription] = useState<string>("");
   const [selectedtime, setSelectedtime] = useState<string>("");
-  const [priority, setPriority] = useState<string>("medium");
+  const [priority, setPriority] = useState<string>("Select priority");
   const [categoryId, setCategoryId] = useState<number | null>(null);
 
   const handleTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +33,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo, categories }) => {
   const resetForm = () => {
     setDescription("");
     setSelectedtime("");
-    setPriority("medium");
+    setPriority("Select priority");
     setCategoryId(null);
   };
 
@@ -53,10 +53,13 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo, categories }) => {
           onChange={handleTimeChange}
         />
         <select
-          className="priority-select"
+          className="minimal"
           value={priority}
           onChange={(e) => setPriority(e.target.value)}
         >
+          <option value="default">
+            Select priority
+          </option>
           <option value="easy" className="priority-option">
             Easy
           </option>
@@ -69,7 +72,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo, categories }) => {
         </select>
         {categories.length > 0 && (
           <select
-            className="category-select"
+            className="minimal"
             value={categoryId ?? ""}
             onChange={handleCategoryChange}
           >
@@ -81,13 +84,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo, categories }) => {
             ))}
           </select>
         )}
-        <div className="selected-categories">
-          {categoryId && (
-            <div className="category-item">
-              Selected Category: {categories.find((cat) => cat.id === categoryId)?.name}
-            </div>
-          )}
-        </div>
+        
       </div>
       <input
         className="todo-description"

@@ -79,7 +79,7 @@ router.put("/todos/:id", authenticateToken, async (req: Request, res: Response) 
     }
     await pool.query(
       "UPDATE todos SET description = $1, completed = $2, selectedtime = $3, priority = $4, category_id = $5 WHERE id = $6",
-      [description, completed, selectedtime, priority, id]
+      [description, completed, selectedtime, priority, categoryId, id]
     );
     res.json("Todo was updated!");
   } catch (err) {
