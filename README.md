@@ -91,8 +91,9 @@ postgres=# \c yourdatabase
 ALTER TABLE todos ADD COLUMN category_id INTEGER REFERENCES categories(id);
 ```
 
-```
+
 # If permission denied for table categories ({"error":"Internal Server Error"}):
+
 ```
 postgres=# \c yourdatabase
 todoapp=# GRANT SELECT, INSERT, UPDATE, DELETE ON categories TO youruser;
